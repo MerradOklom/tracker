@@ -15,7 +15,7 @@ impl<'tel> TelegramClient<'tel> {
     }
     /// Get the userid of the bot
     pub async fn get_bot_id(&self) -> String {
-        let url = format!("https://api.telegram.org/bot/{}/getMe", self.token);
+        let url = format!("https://api.telegram.org/bot{}/getMe", self.token);
         let req = reqwest::Client::new();
         let resp = req.post(url).send().await.unwrap();
         let json: Value = resp.json().await.unwrap();
@@ -30,7 +30,7 @@ impl<'tel> TelegramClient<'tel> {
         return bot_id;
     }
     pub async fn get_chat_type(&self) -> String {
-        let url = format!("https://api.telegram.org/bot/{}/getChat", self.token);
+        let url = format!("https://api.telegram.org/bot{}/getChat", self.token);
         let req = reqwest::Client::new();
         let param = [("chat_id", self.chat_id)];
         let resp = req.post(url).form(&param).send().await.unwrap();
@@ -43,7 +43,7 @@ impl<'tel> TelegramClient<'tel> {
     }
     /// Check if the bot can pin the messages or not in the group/channel
     pub async fn can_pin_messages(&self) -> bool {
-        let url = format!("https://api.telegram.org/bot/{}/getChatMember", self.token);
+        let url = format!("https://api.telegram.org/bot{}/getChatMember", self.token);
         let req = reqwest::Client::new();
         let botid = self.get_bot_id().await;
         let param = [("chat_id", self.chat_id), ("user_id", &botid)];
@@ -83,7 +83,7 @@ impl<'tel> TelegramClient<'tel> {
             ("parse_mode", "HTML"),
             ("disable_web_page_preview", "yes"),
         ];
-        let url = format!("https://api.telegram.org/bot/{}/sendMessage", self.token);
+        let url = format!("https://api.telegram.org/bot{}/sendMessage", self.token);
         let m = reqwest::Client::new();
         let resp = m.post(url).form(&params).send().await.unwrap();
         println!("{:#?}", resp);
@@ -109,7 +109,7 @@ impl<'tel> TelegramClient<'tel> {
         }
     }
     pub async fn pin_message(&self, msg_id: &str) {
-        let url = format!("https://api.telegram.org/bot/{}/pinChatMessage", self.token);
+        let url = format!("https://api.telegram.org/bot{}/pinChatMessage", self.token);
         let client = reqwest::Client::new();
         let form = [
             ("chat_id", self.chat_id),
