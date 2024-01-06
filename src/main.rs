@@ -38,6 +38,7 @@ async fn run() {
         let status = &req.status().as_str().to_owned();
         let content = req.text().await.ok();
         let json_text = track.parse_resp_json(content, status);
+        println!("{:#?}", json_text);
         match json_text {
             Some(text) => {
                 let filename = i.replace("/", "_");

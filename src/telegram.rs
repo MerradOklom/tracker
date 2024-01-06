@@ -86,7 +86,11 @@ impl<'tel> TelegramClient<'tel> {
         let url = format!("https://api.telegram.org/bot{}/sendMessage", self.token);
         let m = reqwest::Client::new();
         let resp = m.post(url).form(&params).send().await.unwrap();
+        println!();
+        println!("{:#?}", params);
+        println!();
         println!("{:#?}", resp);
+        println!();
         let status = &resp.status().as_str().to_owned();
         let json: Value = resp.json().await.unwrap();
         let msg_id = json
