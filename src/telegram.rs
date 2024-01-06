@@ -76,12 +76,13 @@ impl<'tel> TelegramClient<'tel> {
         }
         return can_pin_message;
     }
-    pub async fn send_message(&self, text: &str) {
+    pub async fn send_message(&self, text: &str, html_url: &str) {
         let params = [
             ("chat_id", self.chat_id),
             ("text", text),
             ("parse_mode", "HTML"),
             ("disable_web_page_preview", "yes"),
+            ("reply_markup", "{\"inline_keyboard\" : [[{\"text\": \"Ver registro de cambios\", \"url\": \" ".to_owned() + html_url + "\"}]]}"),
         ];
         let url = format!("https://api.telegram.org/bot{}/sendMessage", self.token);
         let m = reqwest::Client::new();

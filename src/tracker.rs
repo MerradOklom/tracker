@@ -62,7 +62,6 @@ impl Tracker {
     /// Author: //author name who released the build
     /// Release Name: //release name
     /// Release Tag: //tag name
-    /// Changelogs: //release changelog
     /// Downloads: //URLs of download assets
     /// ```
     pub fn parse_json_message(
@@ -80,6 +79,7 @@ impl Tracker {
         }
         let tag_name = self.escape_html(json_text.get("tag_name").unwrap().as_str().unwrap());
         let release_name = self.escape_html(json_text.get("name").unwrap().as_str().unwrap());
+        let html_url = json_text.get("html_url").unwrap().as_str().unwrap();
         let repo_link = json_text
             .get("html_url")
             .unwrap()
@@ -118,18 +118,17 @@ impl Tracker {
             }
         }
         let message = format!(
-        "<strong>New <a href='{}'>{}</a> Update is out</strong>\n<strong>Author: </strong><a href='{}'>{}</a>\n<strong>Release Name: </strong><code>{}</code>\n<strong>Release Tag: </strong><code>{}</code>\n<strong>Changelogs: </strong>\n<code>{}</code>\n{}#{} #{}",
+        "<strong>Nueva versión de <a href='{}'>{}</a> disponible</strong>\n<strong>Autor: </strong><a href='{}'>{}</a>\n<strong>Nombre de la versión: </strong><code>{}</code>\n<strong>Etiqueta de la versión: </strong><code>{}</code>\n{}#{} #{}",
         &repo_link,
         &reponame,
         &author_link,
         &uploader_name,
         &release_name,
         &tag_name,
-        &changelog,
         &download_text,
         &tag_name,
         &reponame,
         );
-        return (isupdatable, message);
+        return (isupdatable, message, html_url);
     }
 }

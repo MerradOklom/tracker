@@ -40,12 +40,10 @@ async fn run() {
         let json_text = track.parse_resp_json(content, status);
         match json_text {
             Some(text) => {
-                let regex = regex::Regex::new(r"<strong>Registro de cambios: <\/strong>([\s\S]*?)(?=<strong>Descargas: <\/strong>)").unwrap();
-                let shortText = regex.replace_all(&text, "");
                 let filename = i.replace("/", "_");
-                let (updatable, message) = track.parse_json_message(shortText, filename, reponame);
+                let (updatable, messagem, html_url) = track.parse_json_message(text, filename, reponame);
                 if updatable {
-                    tgclient.send_message(&message).await;
+                    tgclient.send_message(&message, &html_url).await;
                 }
             }
             None => println!("Failed to send the message"), //track.post_to_telegram("Failed to get the message".to_string(),&token,&chat_id),
