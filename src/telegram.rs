@@ -1,5 +1,5 @@
 extern crate reqwest;
-use serde_json::Value;
+use serde_json::{json, Value};
 
 pub struct TelegramClient<'tel> {
     token: &'tel str,
@@ -18,8 +18,8 @@ impl<'tel> TelegramClient<'tel> {
         let url = format!("https://api.telegram.org/bot{}/getMe", self.token);
         let req = reqwest::Client::new();
         let resp = req.post(url).send().await.unwrap();
-        let json: Value = resp.json().await.unwrap();
-        let bot_id = json
+        let jsonValue: Value = resp.json().await.unwrap();
+        let bot_id = jsonValue
             .get("result")
             .unwrap()
             .get("id")
@@ -34,8 +34,8 @@ impl<'tel> TelegramClient<'tel> {
         let req = reqwest::Client::new();
         let param = [("chat_id", self.chat_id)];
         let resp = req.post(url).form(&param).send().await.unwrap();
-        let json: Value = resp.json().await.unwrap();
-        let chat_type = match json.get("result").unwrap().get("type").unwrap().as_str() {
+        let jsonValue: Value = resp.json().await.unwrap();
+        let chat_type = match jsonValue.get("result").unwrap().get("type").unwrap().as_str() {
             Some(val) => val.to_string(),
             None => "".to_string(),
         };
@@ -48,11 +48,11 @@ impl<'tel> TelegramClient<'tel> {
         let botid = self.get_bot_id().await;
         let param = [("chat_id", self.chat_id), ("user_id", &botid)];
         let resp = req.post(url).form(&param).send().await.unwrap();
-        let json: Value = resp.json().await.unwrap();
+        let jsonValue: Value = resp.json().await.unwrap();
         let chatype = self.get_chat_type().await;
         let can_pin_message;
         if &chatype != "channel" {
-            can_pin_message = match json
+            can_pin_message = match jsonValue
                 .get("result")
                 .unwrap()
                 .get("can_pin_messages")
@@ -63,7 +63,7 @@ impl<'tel> TelegramClient<'tel> {
                 None => false,
             };
         } else {
-            can_pin_message = match json
+            can_pin_message = match jsonValue
                 .get("result")
                 .unwrap()
                 .get("can_edit_messages")
@@ -77,19 +77,26 @@ impl<'tel> TelegramClient<'tel> {
         return can_pin_message;
     }
     pub async fn send_message(&self, text: &str, html_url: &str) {
+        let reply_markup = json!({
+            "inline_keyboard": [[{
+                "text": "Ver registro de cambios",
+                "url": html_url
+            }]]
+        });
+        let reply_markup_json = serde_json::to_string(&reply_markup).expect("Error al serializar a JSON");
         let params = [
             ("chat_id", self.chat_id),
             ("text", text),
             ("parse_mode", "HTML"),
             ("disable_web_page_preview", "yes"),
-            ("reply_markup", "{\"inline_keyboard\" : [[{\"text\": \"Ver registro de cambios\", \"url\": \" " + html_url + "\"}]]}"),
+            ("reply_markup", &reply_markup_json),
         ];
         let url = format!("https://api.telegram.org/bot{}/sendMessage", self.token);
         let m = reqwest::Client::new();
         let resp = m.post(url).form(&params).send().await.unwrap();
         let status = &resp.status().as_str().to_owned();
-        let json: Value = resp.json().await.unwrap();
-        let msg_id = json
+        let jsonValue: Value = resp.json().await.unwrap();
+        let msg_id = jsonValue
             .get("result")
             .unwrap()
             .get("message_id")
