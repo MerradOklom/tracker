@@ -82,7 +82,7 @@ impl<'tel> TelegramClient<'tel> {
             ("text", text),
             ("parse_mode", "HTML"),
             ("disable_web_page_preview", "yes"),
-            ("reply_markup", "{\"inline_keyboard\" : [[{\"text\": \"Ver registro de cambios\", \"url\": \" ".to_owned() + html_url + "\"}]]}"),
+            ("reply_markup", "{\"inline_keyboard\" : [[{\"text\": \"Ver registro de cambios\", \"url\": \" " + html_url + "\"}]]}"),
         ];
         let url = format!("https://api.telegram.org/bot{}/sendMessage", self.token);
         let m = reqwest::Client::new();
