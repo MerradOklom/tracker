@@ -38,11 +38,12 @@ async fn run() {
         let status = &req.status().as_str().to_owned();
         let content = req.text().await.ok();
         let json_text = track.parse_resp_json(content, status);
-        println!("{:#?}", json_text);
         match json_text {
             Some(text) => {
+                let regex = regex::Regex::new(r"<strong>Registro de cambios: <\/strong>([\s\S]*?)(?=<strong>Descargas: <\/strong>)").unwrap();
+                let shortText = regex.replace_all(&text, "");
                 let filename = i.replace("/", "_");
-                let (updatable, message) = track.parse_json_message(text, filename, reponame);
+                let (updatable, message) = track.parse_json_message(shortText, filename, reponame);
                 if updatable {
                     tgclient.send_message(&message).await;
                 }
