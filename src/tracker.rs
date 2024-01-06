@@ -69,7 +69,7 @@ impl Tracker {
         json_text: serde_json::Value,
         s_filename: String,
         reponame: &str,
-    ) -> (bool, String) {
+    ) -> (bool, String, String) {
         let body = json_text.get("body").unwrap().as_str().unwrap();
         let changelog;
         if body.len() != 0 {
