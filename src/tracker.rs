@@ -70,7 +70,6 @@ impl Tracker {
         s_filename: String,
         reponame: &str,
     ) -> (bool, String, String) {
-        let body = json_text.get("body").unwrap().as_str().unwrap();
         let tag_name = self.escape_html(json_text.get("tag_name").unwrap().as_str().unwrap());
         let release_name = self.escape_html(json_text.get("name").unwrap().as_str().unwrap());
         let html_url = json_text.get("html_url").unwrap().as_str().unwrap().to_string();
