@@ -41,7 +41,7 @@ async fn run() {
         match json_text {
             Some(text) => {
                 let filename = i.replace("/", "_");
-                let (updatable, messagem, html_url) = track.parse_json_message(text, filename, reponame);
+                let (updatable, message, html_url) = track.parse_json_message(text, filename, reponame);
                 if updatable {
                     tgclient.send_message(&message, &html_url).await;
                 }

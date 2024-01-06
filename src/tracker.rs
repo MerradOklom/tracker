@@ -79,7 +79,7 @@ impl Tracker {
         }
         let tag_name = self.escape_html(json_text.get("tag_name").unwrap().as_str().unwrap());
         let release_name = self.escape_html(json_text.get("name").unwrap().as_str().unwrap());
-        let html_url = json_text.get("html_url").unwrap().as_str().unwrap();
+        let html_url = json_text.get("html_url").unwrap().as_str().unwrap().to_string();
         let repo_link = json_text
             .get("html_url")
             .unwrap()
