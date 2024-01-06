@@ -41,7 +41,7 @@ impl Tracker {
         }
     }
     pub fn get_assets(&self, asset_json: &Vec<serde_json::Value>) -> String {
-        let mut asset_str = String::from("<strong>Downloads: </strong>\n");
+        let mut asset_str = String::from("<strong>Descargas: </strong>\n");
         for i in asset_json {
             let download = i.get("browser_download_url").unwrap().as_str().unwrap();
             let name = i.get("name").unwrap().as_str().unwrap();
@@ -71,12 +71,6 @@ impl Tracker {
         reponame: &str,
     ) -> (bool, String, String) {
         let body = json_text.get("body").unwrap().as_str().unwrap();
-        let changelog;
-        if body.len() != 0 {
-            changelog = self.escape_html(body);
-        } else {
-            changelog = "<strong>No Changelogs</strong>".to_string();
-        }
         let tag_name = self.escape_html(json_text.get("tag_name").unwrap().as_str().unwrap());
         let release_name = self.escape_html(json_text.get("name").unwrap().as_str().unwrap());
         let html_url = json_text.get("html_url").unwrap().as_str().unwrap().to_string();
