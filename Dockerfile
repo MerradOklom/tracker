@@ -22,14 +22,17 @@ COPY . .
 # Build the actual package
 RUN cargo build --release
 
-# Use a smaller base image for the final stage
-FROM debian:buster-slim
+# Use a newer base image for the final stage
+FROM debian:bullseye-slim
 
 # Install necessary packages for the dummy HTTP server
-RUN apt-get update && apt-get install -y curl
+RUN apt-get update && apt-get install -y curl netcat
 
 # Copy the built executable from the builder stage
 COPY --from=builder /usr/src/app/target/release/release-track /usr/local/bin/release-track
+
+# Copy the .env file to the final stage
+COPY --from=builder /usr/src/app/.env /usr/local/bin/.env
 
 # Create a simple dummy HTTP server script
 RUN echo '#!/bin/sh\nwhile true; do echo -e "HTTP/1.1 200 OK\n\nHello, World!" | nc -l -p 8000; done' > /usr/local/bin/dummy_server.sh && chmod +x /usr/local/bin/dummy_server.sh
