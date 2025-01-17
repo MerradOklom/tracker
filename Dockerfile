@@ -1,5 +1,12 @@
-# Use the official Rust image as the base image for building
-FROM rust:latest as builder
+# Use the Ubuntu image as the base image
+FROM ubuntu:20.04
+
+# Install necessary packages for the Rust application and the HTTP server
+RUN apt-get update && apt-get install -y curl python3 python3-pip build-essential
+
+# Install Rust and Cargo
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
 
 # Set the working directory inside the container
 WORKDIR /usr/src/app
@@ -22,20 +29,14 @@ COPY . .
 # Build the actual package
 RUN cargo build --release
 
-# Use a different base image for the final stage
-FROM ubuntu:20.04
+# Copy the built executable to the final location
+COPY /usr/src/app/target/release/release-track /usr/local/bin/release-track
 
-# Install necessary packages for the dummy HTTP server
-RUN apt-get update && apt-get install -y curl netcat
+# Create a simple HTTP server script
+RUN echo 'import http.server\nimport socketserver\n\nPORT = 8000\nHandler = http.server.SimpleHTTPRequestHandler\n\nwith socketserver.TCPServer(("", PORT), Handler) as httpd:\n    print("serving at port", PORT)\n    httpd.serve_forever()' > server.py
 
-# Copy the built executable from the builder stage
-COPY --from=builder /usr/src/app/target/release/release-track /usr/local/bin/release-track
-
-# Create a simple dummy HTTP server script
-RUN echo '#!/bin/sh\nwhile true; do echo "Starting server..."; echo -e "HTTP/1.1 200 OK\n\nHello, World!" | nc -l -p 8000 -s 0.0.0.0; done' > /usr/local/bin/dummy_server.sh && chmod +x /usr/local/bin/dummy_server.sh
-
-# Expose port 8000 for the dummy HTTP server
+# Expose port 8000 for the HTTP server
 EXPOSE 8000
 
-# Run the cargo executable and the dummy HTTP server
-CMD ["sh", "-c", "release-track & /usr/local/bin/dummy_server.sh"]
+# Run both the cargo executable and the HTTP server
+CMD ["sh", "-c", "release-track & python3 server.py"]
