@@ -13,7 +13,7 @@ use tracker::Tracker;
 async fn main() {
     loop {
         run().await;
-        sleep(Duration::from_secs(120));
+        sleep(Duration::from_secs(600));
     }
 }
 async fn run() {
